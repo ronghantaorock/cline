@@ -6,7 +6,6 @@ import { detectWorkspaceRoots } from "@core/workspace/detection"
 import { setupWorkspaceManager } from "@core/workspace/setup"
 import type { WorkspaceRootManager } from "@core/workspace/WorkspaceRootManager"
 import { cleanupLegacyCheckpoints } from "@integrations/checkpoints/CheckpointMigration"
-import { ClineAccountService } from "@services/account/ClineAccountService"
 import { McpHub } from "@services/mcp/McpHub"
 import type { ApiProvider, ModelInfo } from "@shared/api"
 import type { ChatContent } from "@shared/ChatContent"
@@ -68,7 +67,6 @@ export class Controller {
 	task?: Task
 
 	mcpHub: McpHub
-	accountService: ClineAccountService
 	authService: AuthService
 	readonly stateManager: StateManager
 
@@ -130,7 +128,6 @@ export class Controller {
 			},
 		})
 		this.authService = AuthService.getInstance(this)
-		this.accountService = ClineAccountService.getInstance()
 		BannerService.initialize(this)
 
 		this.authService.restoreRefreshTokenAndRetrieveAuthInfo().then(() => {

@@ -198,8 +198,6 @@ async function findOrganizationWithRemoteConfig(): Promise<{ organizationId: str
  * @returns RemoteConfig if found and applied, undefined otherwise
  */
 async function ensureUserInOrgWithRemoteConfig(controller: Controller): Promise<RemoteConfig | undefined> {
-	const authService = AuthService.getInstance()
-
 	try {
 		// Find an organization with remote config
 		const result = await findOrganizationWithRemoteConfig()
@@ -211,12 +209,6 @@ async function ensureUserInOrgWithRemoteConfig(controller: Controller): Promise<
 		}
 
 		const { organizationId, config } = result
-
-		// Check if we need to switch organizations
-		const currentActiveOrgId = authService.getActiveOrganizationId()
-		if (currentActiveOrgId !== organizationId) {
-			await controller.accountService.switchAccount(organizationId)
-		}
 
 		const configuredApiKeys: ConfiguredAPIKeys = {}
 

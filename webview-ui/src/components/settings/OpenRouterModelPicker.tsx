@@ -1,4 +1,4 @@
-import { CLAUDE_SONNET_1M_SUFFIX, openRouterDefaultModelId } from "@shared/api"
+import { openRouterDefaultModelId } from "@shared/api"
 import { StringRequest } from "@shared/proto/cline/common"
 import type { Mode } from "@shared/storage/types"
 import { VSCodeLink, VSCodeTextField } from "@vscode/webview-ui-toolkit/react"
@@ -10,7 +10,6 @@ import styled from "styled-components"
 import { useExtensionState } from "@/context/ExtensionStateContext"
 import { StateServiceClient } from "@/services/grpc-client"
 import { highlight } from "@/utils/highlight"
-import { ContextWindowSwitcher } from "./common/ContextWindowSwitcher"
 import { ModelInfoView } from "./common/ModelInfoView"
 import ReasoningEffortSelector from "./ReasoningEffortSelector"
 import ThinkingBudgetSlider from "./ThinkingBudgetSlider"
@@ -315,38 +314,6 @@ const OpenRouterModelPicker: React.FC<OpenRouterModelPickerProps> = ({ isPopup, 
 						</DropdownList>
 					)}
 				</DropdownWrapper>
-
-				{/* Context window switcher for Claude Opus 4.6 */}
-				<ContextWindowSwitcher
-					base1mModelId={`anthropic/claude-opus-4.6${CLAUDE_SONNET_1M_SUFFIX}`}
-					base200kModelId="anthropic/claude-opus-4.6"
-					onModelChange={handleModelChange}
-					selectedModelId={selectedModelId}
-				/>
-
-				{/* Context window switcher for Claude Sonnet 4.6 */}
-				<ContextWindowSwitcher
-					base1mModelId={`anthropic/claude-sonnet-4.6${CLAUDE_SONNET_1M_SUFFIX}`}
-					base200kModelId="anthropic/claude-sonnet-4.6"
-					onModelChange={handleModelChange}
-					selectedModelId={selectedModelId}
-				/>
-
-				{/* Context window switcher for Claude Sonnet 4.5 */}
-				<ContextWindowSwitcher
-					base1mModelId={`anthropic/claude-sonnet-4.5${CLAUDE_SONNET_1M_SUFFIX}`}
-					base200kModelId="anthropic/claude-sonnet-4.5"
-					onModelChange={handleModelChange}
-					selectedModelId={selectedModelId}
-				/>
-
-				{/* Context window switcher for Claude Sonnet 4 */}
-				<ContextWindowSwitcher
-					base1mModelId={`anthropic/claude-sonnet-4${CLAUDE_SONNET_1M_SUFFIX}`}
-					base200kModelId="anthropic/claude-sonnet-4"
-					onModelChange={handleModelChange}
-					selectedModelId={selectedModelId}
-				/>
 			</div>
 
 			{hasInfo ? (
