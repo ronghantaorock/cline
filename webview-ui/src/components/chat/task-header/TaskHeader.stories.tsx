@@ -277,8 +277,8 @@ export const NoCost: Story = {
 		createStorybookDecorator({
 			expandTaskHeader: true,
 			apiConfiguration: {
-				actModeApiProvider: "ollama",
-				actModeApiModelId: "llama3.2",
+				actModeApiProvider: "openrouter",
+				actModeApiModelId: "anthropic/claude-sonnet-4.5",
 			},
 			clineMessages: createMessages(),
 		}),
@@ -286,7 +286,7 @@ export const NoCost: Story = {
 	parameters: {
 		docs: {
 			description: {
-				story: "TaskHeader with local model (Ollama) showing no cost information.",
+				story: "TaskHeader with OpenRouter model showing cost information.",
 			},
 		},
 	},

@@ -312,8 +312,8 @@ const OnboardingView = ({ onboardingModels }: { onboardingModels: OnboardingMode
 					actModeOpenRouterModelId: selectedModelId,
 					planModeOpenRouterModelInfo: openRouterModels[selectedModelId],
 					actModeOpenRouterModelInfo: openRouterModels[selectedModelId],
-					planModeApiProvider: "cline",
-					actModeApiProvider: "cline",
+					planModeApiProvider: "openrouter",
+					actModeApiProvider: "openrouter",
 				})
 			}
 			hideSettings()

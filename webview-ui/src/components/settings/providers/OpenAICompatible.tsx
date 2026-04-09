@@ -1,5 +1,5 @@
 import { TooltipContent, TooltipTrigger } from "@radix-ui/react-tooltip"
-import { azureOpenAiDefaultApiVersion, openAiModelInfoSaneDefaults } from "@shared/api"
+import { openAiModelInfoSaneDefaults } from "@shared/api"
 import { OpenAiModelsRequest } from "@shared/proto/cline/models"
 import { Mode } from "@shared/storage/types"
 import { VSCodeButton, VSCodeCheckbox } from "@vscode/webview-ui-toolkit/react"
@@ -9,7 +9,6 @@ import { useExtensionState } from "@/context/ExtensionStateContext"
 import { ModelsServiceClient } from "@/services/grpc-client"
 import { getAsVar, VSC_DESCRIPTION_FOREGROUND } from "@/utils/vscStyles"
 import { ApiKeyField } from "../common/ApiKeyField"
-import { BaseUrlField } from "../common/BaseUrlField"
 import { DebouncedTextField } from "../common/DebouncedTextField"
 import { ModelInfoView } from "../common/ModelInfoView"
 import ReasoningEffortSelector from "../ReasoningEffortSelector"
@@ -74,32 +73,14 @@ export const OpenAICompatibleProvider = ({ showModelOptions, isPopup, currentMod
 
 	return (
 		<div>
-			<Tooltip>
-				<TooltipTrigger>
-					<div className="mb-2.5">
-						<div className="flex items-center gap-2 mb-1">
-							<span style={{ fontWeight: 500 }}>Base URL</span>
-							{remoteConfigSettings?.openAiBaseUrl !== undefined && (
-								<i className="codicon codicon-lock text-description text-sm" />
-							)}
-						</div>
-						<DebouncedTextField
-							disabled={remoteConfigSettings?.openAiBaseUrl !== undefined}
-							initialValue={apiConfiguration?.openAiBaseUrl || ""}
-							onChange={(value) => {
-								handleFieldChange("openAiBaseUrl", value)
-								debouncedRefreshOpenAiModels(value, apiConfiguration?.openAiApiKey)
-							}}
-							placeholder={"Enter base URL..."}
-							style={{ width: "100%", marginBottom: 10 }}
-							type="text"
-						/>
-					</div>
-				</TooltipTrigger>
-				<TooltipContent hidden={remoteConfigSettings?.openAiBaseUrl === undefined}>
-					This setting is managed by your organization's remote configuration
-				</TooltipContent>
-			</Tooltip>
+			<ApiKeyField
+				initialValue={apiConfiguration?.openAiBaseUrl || ""}
+				onChange={(value) => {
+					handleFieldChange("openAiBaseUrl", value)
+					debouncedRefreshOpenAiModels(value, apiConfiguration?.openAiApiKey)
+				}}
+				providerName="Base URL"
+			/>
 
 			<ApiKeyField
 				initialValue={apiConfiguration?.openAiApiKey || ""}
@@ -110,15 +91,13 @@ export const OpenAICompatibleProvider = ({ showModelOptions, isPopup, currentMod
 				providerName="OpenAI Compatible"
 			/>
 
-			<DebouncedTextField
+			<ApiKeyField
 				initialValue={selectedModelId || ""}
 				onChange={(value) =>
 					handleModeFieldChange({ plan: "planModeOpenAiModelId", act: "actModeOpenAiModelId" }, value, currentMode)
 				}
-				placeholder={"Enter Model ID..."}
-				style={{ width: "100%", marginBottom: 10 }}>
-				<span style={{ fontWeight: 500 }}>Model ID</span>
-			</DebouncedTextField>
+				providerName="Model ID"
+			/>
 
 			{/* OpenAI Compatible Custom Headers */}
 			{(() => {
@@ -199,38 +178,6 @@ export const OpenAICompatibleProvider = ({ showModelOptions, isPopup, currentMod
 					</div>
 				)
 			})()}
-
-			{remoteConfigSettings?.azureApiVersion !== undefined ? (
-				<Tooltip>
-					<TooltipTrigger>
-						<BaseUrlField
-							disabled={true}
-							initialValue={apiConfiguration?.azureApiVersion}
-							label="Set Azure API version"
-							onChange={(value) => handleFieldChange("azureApiVersion", value)}
-							placeholder={`Default: ${azureOpenAiDefaultApiVersion}`}
-							showLockIcon={true}
-						/>
-					</TooltipTrigger>
-					<TooltipContent>This setting is managed by your organization's remote configuration</TooltipContent>
-				</Tooltip>
-			) : (
-				<BaseUrlField
-					initialValue={apiConfiguration?.azureApiVersion}
-					label="Set Azure API version"
-					onChange={(value) => handleFieldChange("azureApiVersion", value)}
-					placeholder={`Default: ${azureOpenAiDefaultApiVersion}`}
-				/>
-			)}
-
-			<VSCodeCheckbox
-				checked={apiConfiguration?.azureIdentity || false}
-				onChange={(e: any) => {
-					const isChecked = e.target.checked === true
-					return handleFieldChange("azureIdentity", isChecked)
-				}}>
-				Use Azure Identity Authentication
-			</VSCodeCheckbox>
 
 			<div
 				onClick={() => setModelConfigurationSelected((val) => !val)}

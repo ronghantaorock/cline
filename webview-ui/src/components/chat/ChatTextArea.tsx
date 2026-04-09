@@ -1069,41 +1069,27 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 		// Get model display name
 		const modelDisplayName = useMemo(() => {
 			const { selectedProvider, selectedModelId } = normalizeApiConfiguration(apiConfiguration, mode)
-			const {
-				vsCodeLmModelSelector,
-				togetherModelId,
-				lmStudioModelId,
-				ollamaModelId,
-				liteLlmModelId,
-				requestyModelId,
-				vercelAiGatewayModelId,
-			} = getModeSpecificFields(apiConfiguration, mode)
+			const { vsCodeLmModelSelector } = getModeSpecificFields(apiConfiguration, mode)
 			const unknownModel = "unknown"
 
 			if (!apiConfiguration) {
 				return unknownModel
 			}
 			switch (selectedProvider) {
-				case "cline":
-					return `${selectedProvider}:${selectedModelId}`
 				case "openai":
 					return `openai-compat:${selectedModelId}`
 				case "vscode-lm":
 					return `vscode-lm:${vsCodeLmModelSelector ? `${vsCodeLmModelSelector.vendor ?? ""}/${vsCodeLmModelSelector.family ?? ""}` : unknownModel}`
-				case "together":
-					return `${selectedProvider}:${togetherModelId}`
-				case "lmstudio":
-					return `${selectedProvider}:${lmStudioModelId}`
-				case "ollama":
-					return `${selectedProvider}:${ollamaModelId}`
-				case "litellm":
-					return `${selectedProvider}:${liteLlmModelId}`
-				case "requesty":
-					return `${selectedProvider}:${requestyModelId}`
-				case "vercel-ai-gateway":
-					return `${selectedProvider}:${vercelAiGatewayModelId || selectedModelId}`
 				case "anthropic":
 				case "openrouter":
+				case "deepseek":
+				case "gemini":
+				case "claude-code":
+				case "qwen":
+				case "qwen-code":
+				case "moonshot":
+				case "minimax":
+				case "openai-native":
 				default:
 					return `${selectedProvider}:${selectedModelId}`
 			}

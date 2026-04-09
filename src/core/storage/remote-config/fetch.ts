@@ -219,23 +219,6 @@ async function ensureUserInOrgWithRemoteConfig(controller: Controller): Promise<
 		}
 
 		const configuredApiKeys: ConfiguredAPIKeys = {}
-		// Fetch and store API keys for configured providers
-		const hasConfiguredProviders = config.providerSettings && Object.keys(config.providerSettings).length > 0
-		if (hasConfiguredProviders) {
-			const apiKeys = await fetchApiKeysForOrganization(organizationId)
-			if (config.providerSettings?.LiteLLM) {
-				if (apiKeys.litellm) {
-					configuredApiKeys["litellm"] = true
-					controller.stateManager.setSecret("remoteLiteLlmApiKey", apiKeys.litellm)
-				} else {
-					controller.stateManager.setSecret("remoteLiteLlmApiKey", undefined)
-				}
-			} else {
-				controller.stateManager.setSecret("remoteLiteLlmApiKey", undefined)
-			}
-		} else {
-			controller.stateManager.setSecret("remoteLiteLlmApiKey", undefined)
-		}
 
 		// Cache and apply the remote config
 		await writeRemoteConfigToCache(organizationId, config)

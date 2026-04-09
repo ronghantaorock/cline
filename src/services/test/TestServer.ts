@@ -208,24 +208,24 @@ export async function createTestServer(controller: Controller): Promise<http.Ser
 						// Get current API configuration
 						const apiConfiguration = visibleWebview.controller.stateManager.getApiConfiguration()
 
-						// Update API configuration with API key
+						// Update API configuration with API key - use openrouter as default test provider
 						const updatedConfig = {
 							...apiConfiguration,
-							apiProvider: "cline" as ApiProvider,
-							clineAccountId: apiKey,
+							apiProvider: "openrouter" as ApiProvider,
+							openRouterApiKey: apiKey,
 						}
 
 						// Store the API key securely
-						visibleWebview.controller.stateManager.setSecret("clineAccountId", apiKey)
+						visibleWebview.controller.stateManager.setSecret("openRouterApiKey", apiKey)
 
 						visibleWebview.controller.stateManager.setApiConfiguration(updatedConfig)
 
-						// Update cache service to use cline provider
+						// Update cache service to use openrouter provider
 						const currentConfig = visibleWebview.controller.stateManager.getApiConfiguration()
 						visibleWebview.controller.stateManager.setApiConfiguration({
 							...currentConfig,
-							planModeApiProvider: "cline",
-							actModeApiProvider: "cline",
+							planModeApiProvider: "openrouter",
+							actModeApiProvider: "openrouter",
 						})
 
 						// Post state to webview to reflect changes

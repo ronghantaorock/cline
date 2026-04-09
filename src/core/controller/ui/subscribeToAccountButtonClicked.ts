@@ -1,56 +1,26 @@
-import { Empty, EmptyRequest } from "@shared/proto/cline/common"
-import { Logger } from "@/shared/services/Logger"
-import { getRequestRegistry, StreamingResponseHandler } from "../grpc-handler"
-import { Controller } from "../index"
+// Account button functionality has been removed
+// This is a stub file to maintain compatibility with generated code
 
-// Keep track of active account button clicked subscriptions
-const activeAccountButtonClickedSubscriptions = new Set<StreamingResponseHandler<Empty>>()
+import { Empty, EmptyRequest } from "@shared/proto/cline/common"
+import { StreamingResponseHandler } from "../grpc-handler"
 
 /**
  * Subscribe to account button clicked events
- * @param controller The controller instance
- * @param request The empty request
- * @param responseStream The streaming response handler
- * @param requestId The request ID for cleanup
+ * @deprecated Account button has been removed
  */
 export async function subscribeToAccountButtonClicked(
-	_controller: Controller,
+	_controller: unknown,
 	_request: EmptyRequest,
-	responseStream: StreamingResponseHandler<Empty>,
-	requestId?: string,
+	_responseStream: StreamingResponseHandler<Empty>,
+	_requestId?: string,
 ): Promise<void> {
-	// Add this subscription to the active subscriptions
-	activeAccountButtonClickedSubscriptions.add(responseStream)
-
-	// Register cleanup when the connection is closed
-	const cleanup = () => {
-		activeAccountButtonClickedSubscriptions.delete(responseStream)
-	}
-
-	// Register the cleanup function with the request registry if we have a requestId
-	if (requestId) {
-		getRequestRegistry().registerRequest(requestId, cleanup, { type: "accountButtonClicked_subscription" }, responseStream)
-	}
+	// Account button has been removed, this is a no-op
 }
 
 /**
  * Send an account button clicked event to all active subscribers
+ * @deprecated Account button has been removed
  */
 export async function sendAccountButtonClickedEvent(): Promise<void> {
-	// Send the event to all active subscribers
-	const promises = Array.from(activeAccountButtonClickedSubscriptions).map(async (responseStream) => {
-		try {
-			const event = Empty.create({})
-			await responseStream(
-				event,
-				false, // Not the last message
-			)
-		} catch (error) {
-			Logger.error("Error sending accountButtonClicked event:", error)
-			// Remove the subscription if there was an error
-			activeAccountButtonClickedSubscriptions.delete(responseStream)
-		}
-	})
-
-	await Promise.all(promises)
+	// Account button has been removed, this is a no-op
 }

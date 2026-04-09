@@ -25,7 +25,6 @@ import { LmStudioHandler } from "./providers/lmstudio"
 import { MinimaxHandler } from "./providers/minimax"
 import { MistralHandler } from "./providers/mistral"
 import { MoonshotHandler } from "./providers/moonshot"
-import { NebiusHandler } from "./providers/nebius"
 import { NousResearchHandler } from "./providers/nousresearch"
 import { OcaHandler } from "./providers/oca"
 import { OllamaHandler } from "./providers/ollama"
@@ -42,7 +41,6 @@ import { TogetherHandler } from "./providers/together"
 import { VercelAIGatewayHandler } from "./providers/vercel-ai-gateway"
 import { VertexHandler } from "./providers/vertex"
 import { VsCodeLmHandler } from "./providers/vscode-lm"
-import { WandbHandler } from "./providers/wandb"
 import { XAIHandler } from "./providers/xai"
 import { ZAiHandler } from "./providers/zai"
 import { ApiStream, ApiStreamUsageChunk } from "./transform/stream"
@@ -303,12 +301,6 @@ function createHandlerForProvider(
 				huggingFaceModelInfo:
 					mode === "plan" ? options.planModeHuggingFaceModelInfo : options.actModeHuggingFaceModelInfo,
 			})
-		case "nebius":
-			return new NebiusHandler({
-				onRetryAttempt: options.onRetryAttempt,
-				nebiusApiKey: options.nebiusApiKey,
-				apiModelId: mode === "plan" ? options.planModeApiModelId : options.actModeApiModelId,
-			})
 		case "asksage":
 			return new AskSageHandler({
 				onRetryAttempt: options.onRetryAttempt,
@@ -452,12 +444,6 @@ function createHandlerForProvider(
 				onRetryAttempt: options.onRetryAttempt,
 				nousResearchApiKey: options.nousResearchApiKey,
 				apiModelId: mode === "plan" ? options.planModeNousResearchModelId : options.actModeNousResearchModelId,
-			})
-		case "wandb":
-			return new WandbHandler({
-				onRetryAttempt: options.onRetryAttempt,
-				wandbApiKey: options.wandbApiKey,
-				apiModelId: mode === "plan" ? options.planModeApiModelId : options.actModeApiModelId,
 			})
 		default:
 			return new AnthropicHandler({

@@ -17,9 +17,4 @@ describe("Provider key mapping", () => {
 		expect(getProviderModelIdKey("openrouter", "act")).to.equal("actModeOpenRouterModelId")
 		expect(getProviderModelIdKey("openrouter", "plan")).to.equal("planModeOpenRouterModelId")
 	})
-
-	it("uses provider-specific model key behavior for Cline", () => {
-		expect(getProviderModelIdKey("cline", "act")).to.equal("actModeClineModelId")
-		expect(getProviderModelIdKey("cline", "plan")).to.equal("planModeClineModelId")
-	})
 })

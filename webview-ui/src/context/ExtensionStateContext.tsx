@@ -729,15 +729,6 @@ export const ExtensionStateContextProvider: React.FC<{
 			.catch((error: Error) => console.error("Failed to refresh Cline models:", error))
 	}, [])
 
-	// Auto-refresh Cline models when provider is cline
-	useEffect(() => {
-		const hasClineProvider =
-			state.apiConfiguration?.actModeApiProvider === "cline" || state.apiConfiguration?.planModeApiProvider === "cline"
-		if (hasClineProvider && clineModels === null) {
-			refreshClineModels()
-		}
-	}, [state.apiConfiguration?.actModeApiProvider, state.apiConfiguration?.planModeApiProvider, clineModels, refreshClineModels])
-
 	const contextValue: ExtensionStateContextType = {
 		...state,
 		didHydrateState,

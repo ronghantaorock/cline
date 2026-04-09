@@ -136,8 +136,8 @@ export const WelcomeSection: React.FC<WelcomeSectionProps> = ({ showHistoryView,
 						actModeOpenRouterModelId: modelId,
 						planModeOpenRouterModelInfo: openRouterModels[modelId],
 						actModeOpenRouterModelInfo: openRouterModels[modelId],
-						planModeApiProvider: "cline",
-						actModeApiProvider: "cline",
+						planModeApiProvider: "openrouter",
+						actModeApiProvider: "openrouter",
 					})
 					navigateToSettingsModelPicker({ targetSection: "api-config", initialModelTab })
 					break
