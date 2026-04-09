@@ -123,10 +123,10 @@ export function remoteConfigToOtelConfig(settings: Partial<RemoteConfigFields>):
 
 function getOtelConfig(): OpenTelemetryClientConfig {
 	return {
-		enabled: BUILD_CONSTANTS.OTEL_TELEMETRY_ENABLED === "1" || BUILD_CONSTANTS.OTEL_TELEMETRY_ENABLED === "true",
-		metricsExporter: BUILD_CONSTANTS.OTEL_METRICS_EXPORTER,
-		logsExporter: BUILD_CONSTANTS.OTEL_LOGS_EXPORTER,
-		otlpProtocol: BUILD_CONSTANTS.OTEL_EXPORTER_OTLP_PROTOCOL,
+		enabled: false,
+		metricsExporter: undefined,
+		logsExporter: undefined,
+		otlpProtocol: undefined,
 		otlpEndpoint: BUILD_CONSTANTS.OTEL_EXPORTER_OTLP_ENDPOINT,
 		metricExportInterval: BUILD_CONSTANTS.OTEL_METRIC_EXPORT_INTERVAL
 			? Number.parseInt(BUILD_CONSTANTS.OTEL_METRIC_EXPORT_INTERVAL, 10)
