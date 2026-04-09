@@ -1,7 +1,6 @@
 import type { ClineMessage } from "@shared/ExtensionMessage"
 import type React from "react"
 import { useMemo } from "react"
-import BrowserSessionRow from "@/components/chat/BrowserSessionRow"
 import ChatRow from "@/components/chat/ChatRow"
 import { useExtensionState } from "@/context/ExtensionStateContext"
 import { cn } from "@/lib/utils"
@@ -81,19 +80,37 @@ export const MessageRenderer: React.FC<MessageRendererProps> = ({
 		return <ToolGroupRenderer allMessages={modifiedMessages} isLastGroup={isLastToolGroup} messages={messageOrGroup} />
 	}
 
-	// Browser session group
+	// Browser session group (now treated as regular messages)
 	if (Array.isArray(messageOrGroup)) {
+		// Render each message in the browser session individually
 		return (
-			<BrowserSessionRow
-				expandedRows={expandedRows}
-				isLast={isLastMessage}
-				key={messageOrGroup[0]?.ts}
-				lastModifiedMessage={modifiedMessages.at(-1)}
-				messages={messageOrGroup}
-				onHeightChange={onHeightChange}
-				onSetQuote={onSetQuote}
-				onToggleExpand={onToggleExpand}
-			/>
+			<>
+				{messageOrGroup.map((message) => (
+					<div
+						className={cn({
+							"pb-2.5": isLastMessage && !footerActive,
+						})}
+						data-message-ts={message.ts}
+						key={message.ts}>
+						<ChatRow
+							inputValue={inputValue}
+							isExpanded={expandedRows[message.ts] || false}
+							isLast={isLastMessage}
+							isRequestInProgress={isRequestInProgress}
+							lastModifiedMessage={modifiedMessages.at(-1)}
+							message={message}
+							mode={mode}
+							onCancelCommand={() => messageHandlers.executeButtonAction("cancel")}
+							onHeightChange={onHeightChange}
+							onSetQuote={onSetQuote}
+							onToggleExpand={onToggleExpand}
+							reasoningContent={reasoningData.reasoning}
+							responseStarted={reasoningData.responseStarted}
+							sendMessageFromChatRow={messageHandlers.handleSendMessage}
+						/>
+					</div>
+				))}
+			</>
 		)
 	}
 

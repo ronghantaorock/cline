@@ -11,8 +11,6 @@ import { ButtonActionType } from "../shared/buttonConfig"
  */
 export interface ChatViewProps {
 	isHidden: boolean
-	showAnnouncement: boolean
-	hideAnnouncement: () => void
 	showHistoryView: () => void
 }
 
@@ -145,8 +143,6 @@ export interface TaskSectionProps {
  * Welcome section props
  */
 export interface WelcomeSectionProps {
-	showAnnouncement: boolean
-	hideAnnouncement: () => void
 	showHistoryView: () => void
 	telemetrySetting: string
 	version: string

@@ -3,9 +3,8 @@ import { EmptyRequest } from "@shared/proto/cline/common"
 import type { Worktree } from "@shared/proto/cline/worktree"
 import { TrackWorktreeViewOpenedRequest } from "@shared/proto/cline/worktree"
 import { GitBranch } from "lucide-react"
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import React, { useCallback, useEffect, useMemo, useState } from "react"
 import BannerCarousel from "@/components/common/BannerCarousel"
-import WhatsNewModal from "@/components/common/WhatsNewModal"
 import HistoryPreview from "@/components/history/HistoryPreview"
 import { useApiConfigurationHandlers } from "@/components/settings/utils/useApiConfigurationHandlers"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
@@ -14,7 +13,7 @@ import { SuggestedTasks } from "@/components/welcome/SuggestedTasks"
 import CreateWorktreeModal from "@/components/worktrees/CreateWorktreeModal"
 import { useClineAuth } from "@/context/ClineAuthContext"
 import { useExtensionState } from "@/context/ExtensionStateContext"
-import { AccountServiceClient, StateServiceClient, UiServiceClient, WorktreeServiceClient } from "@/services/grpc-client"
+import { StateServiceClient, UiServiceClient, WorktreeServiceClient } from "@/services/grpc-client"
 import { convertBannerData } from "@/utils/bannerUtils"
 import { getCurrentPlatform } from "@/utils/platformUtils"
 import { WelcomeSectionProps } from "../../types/chatTypes"
@@ -23,21 +22,9 @@ import { WelcomeSectionProps } from "../../types/chatTypes"
  * Welcome section shown when there's no active task
  * Includes info banner, announcements, home header, and history preview
  */
-export const WelcomeSection: React.FC<WelcomeSectionProps> = ({
-	showAnnouncement,
-	hideAnnouncement,
-	showHistoryView,
-	version,
-	taskHistory,
-	shouldShowQuickWins,
-}) => {
+export const WelcomeSection: React.FC<WelcomeSectionProps> = ({ showHistoryView, version, taskHistory, shouldShowQuickWins }) => {
 	const { lastDismissedInfoBannerVersion, lastDismissedCliBannerVersion, lastDismissedModelBannerVersion, dismissedBanners } =
 		useExtensionState()
-
-	// Track if we've shown the "What's New" modal this session
-	const [hasShownWhatsNewModal, setHasShownWhatsNewModal] = useState(false)
-	const [showWhatsNewModal, setShowWhatsNewModal] = useState(false)
-	const bannerWaitTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
 	// Quick launch worktree modal
 	const [showCreateWorktreeModal, setShowCreateWorktreeModal] = useState(false)
@@ -69,49 +56,6 @@ export const WelcomeSection: React.FC<WelcomeSectionProps> = ({
 		welcomeBanners,
 	} = useExtensionState()
 	const { handleFieldsChange } = useApiConfigurationHandlers()
-
-	// Show modal when there's a new announcement and we haven't shown it this session.
-	// We delay opening slightly to wait for welcome banners from the backend API,
-	// which are fetched asynchronously and may not be available on the first state push.
-	// The modal opens immediately if banners arrive, or after a 3s timeout as fallback.
-	useEffect(() => {
-		if (showAnnouncement && !hasShownWhatsNewModal && !bannerWaitTimeoutRef.current) {
-			bannerWaitTimeoutRef.current = setTimeout(() => {
-				bannerWaitTimeoutRef.current = null
-				setShowWhatsNewModal(true)
-				setHasShownWhatsNewModal(true)
-			}, 3000)
-		}
-		return () => {
-			if (bannerWaitTimeoutRef.current) {
-				clearTimeout(bannerWaitTimeoutRef.current)
-				bannerWaitTimeoutRef.current = null
-			}
-		}
-	}, [showAnnouncement, hasShownWhatsNewModal])
-
-	// Open modal early if welcome banners arrive before the timeout
-	useEffect(() => {
-		if (bannerWaitTimeoutRef.current && welcomeBanners && welcomeBanners.length > 0) {
-			if (bannerWaitTimeoutRef.current) {
-				clearTimeout(bannerWaitTimeoutRef.current)
-				bannerWaitTimeoutRef.current = null
-			}
-			setShowWhatsNewModal(true)
-			setHasShownWhatsNewModal(true)
-		}
-	}, [welcomeBanners])
-
-	const handleCloseWhatsNewModal = useCallback(() => {
-		setShowWhatsNewModal(false)
-		// Call hideAnnouncement to persist dismissal (same as old banner behavior)
-		hideAnnouncement()
-		if (welcomeBanners && welcomeBanners.length > 0) {
-			for (const banner of welcomeBanners) {
-				StateServiceClient.dismissBanner({ value: banner.id }).catch(console.error)
-			}
-		}
-	}, [hideAnnouncement, welcomeBanners])
 
 	// Handle click on home page worktree element with telemetry
 	const handleWorktreeClick = useCallback(() => {
@@ -199,10 +143,6 @@ export const WelcomeSection: React.FC<WelcomeSectionProps> = ({
 					break
 				}
 
-				case BannerActionType.ShowAccount:
-					AccountServiceClient.accountLoginClicked({}).catch((err) => console.error("Failed to get login URL:", err))
-					break
-
 				case BannerActionType.ShowApiSettings:
 					if (action.arg) {
 						// Pre-select the provider before navigating
@@ -212,16 +152,6 @@ export const WelcomeSection: React.FC<WelcomeSectionProps> = ({
 						})
 					}
 					navigateToSettings("api-config")
-					break
-
-				case BannerActionType.ShowFeatureSettings:
-					navigateToSettings("features")
-					break
-
-				case BannerActionType.InstallCli:
-					StateServiceClient.installClineCli({}).catch((error) =>
-						console.error("Failed to initiate CLI installation:", error),
-					)
 					break
 
 				default:
@@ -277,67 +207,56 @@ export const WelcomeSection: React.FC<WelcomeSectionProps> = ({
 
 	return (
 		<div className="flex flex-col flex-1 w-full h-full p-0 m-0">
-			<WhatsNewModal
-				onBannerAction={handleBannerAction}
-				onClose={handleCloseWhatsNewModal}
-				open={showWhatsNewModal}
-				version={version}
-				welcomeBanners={welcomeBanners}
-			/>
 			<div className="overflow-y-auto flex flex-col pb-2.5">
 				<HomeHeader shouldShowQuickWins={shouldShowQuickWins} />
-				{!showWhatsNewModal && (
-					<>
-						<BannerCarousel banners={activeBanners} />
-						{!shouldShowQuickWins && taskHistory.length > 0 && <HistoryPreview showHistoryView={showHistoryView} />}
-						{/* Quick launch worktree button */}
-						{isGitRepo && worktreesEnabled?.featureFlag && worktreesEnabled?.user && (
-							<div className="flex flex-col items-center gap-3 mt-2 mb-4 px-5">
-								{/* TODO: Re-enable once worktree creation is stable
+				<>
+					<BannerCarousel banners={activeBanners} />
+					{!shouldShowQuickWins && taskHistory.length > 0 && <HistoryPreview showHistoryView={showHistoryView} />}
+					{/* Quick launch worktree button */}
+					{isGitRepo && worktreesEnabled?.featureFlag && worktreesEnabled?.user && (
+						<div className="flex flex-col items-center gap-3 mt-2 mb-4 px-5">
+							{/* TODO: Re-enable once worktree creation is stable
+							<Tooltip>
+								<TooltipTrigger asChild>
+									<button
+										className="flex items-center gap-2 px-4 py-2 rounded-full border border-[var(--vscode-foreground)]/30 text-[var(--vscode-foreground)] bg-transparent hover:bg-[var(--vscode-list-hoverBackground)] active:opacity-80 text-sm font-medium cursor-pointer"
+										onClick={() => setShowCreateWorktreeModal(true)}
+										type="button">
+										<span className="codicon codicon-empty-window"></span>
+										New Worktree Window
+									</button>
+								</TooltipTrigger>
+								<TooltipContent side="top">
+									Create a new git worktree and open it in a separate window. Great for running parallel
+									Cline tasks.
+								</TooltipContent>
+							</Tooltip>
+							*/}
+							{currentWorktree && (
 								<Tooltip>
 									<TooltipTrigger asChild>
 										<button
-											className="flex items-center gap-2 px-4 py-2 rounded-full border border-[var(--vscode-foreground)]/30 text-[var(--vscode-foreground)] bg-transparent hover:bg-[var(--vscode-list-hoverBackground)] active:opacity-80 text-sm font-medium cursor-pointer"
-											onClick={() => setShowCreateWorktreeModal(true)}
+											className="flex flex-col items-center gap-0.5 text-xs text-[var(--vscode-descriptionForeground)] hover:text-[var(--vscode-foreground)] cursor-pointer bg-transparent border-none p-1 rounded"
+											onClick={handleWorktreeClick}
 											type="button">
-											<span className="codicon codicon-empty-window"></span>
-											New Worktree Window
+											<div className="flex items-center gap-1.5 text-xs">
+												<GitBranch className="w-3 h-3 stroke-[2.5] flex-shrink-0" />
+												<span className="break-all text-center">
+													<span className="font-semibold">Current:</span>{" "}
+													{currentWorktree.branch || "detached HEAD"}
+												</span>
+											</div>
+											<span className="break-all text-center max-w-[300px]">{currentWorktree.path}</span>
 										</button>
 									</TooltipTrigger>
-									<TooltipContent side="top">
-										Create a new git worktree and open it in a separate window. Great for running parallel
-										Cline tasks.
+									<TooltipContent side="bottom">
+										View and manage git worktrees. Great for running parallel Cline tasks.
 									</TooltipContent>
 								</Tooltip>
-								*/}
-								{currentWorktree && (
-									<Tooltip>
-										<TooltipTrigger asChild>
-											<button
-												className="flex flex-col items-center gap-0.5 text-xs text-[var(--vscode-descriptionForeground)] hover:text-[var(--vscode-foreground)] cursor-pointer bg-transparent border-none p-1 rounded"
-												onClick={handleWorktreeClick}
-												type="button">
-												<div className="flex items-center gap-1.5 text-xs">
-													<GitBranch className="w-3 h-3 stroke-[2.5] flex-shrink-0" />
-													<span className="break-all text-center">
-														<span className="font-semibold">Current:</span>{" "}
-														{currentWorktree.branch || "detached HEAD"}
-													</span>
-												</div>
-												<span className="break-all text-center max-w-[300px]">
-													{currentWorktree.path}
-												</span>
-											</button>
-										</TooltipTrigger>
-										<TooltipContent side="bottom">
-											View and manage git worktrees. Great for running parallel Cline tasks.
-										</TooltipContent>
-									</Tooltip>
-								)}
-							</div>
-						)}
-					</>
-				)}
+							)}
+						</div>
+					)}
+				</>
 			</div>
 			<SuggestedTasks shouldShowQuickWins={shouldShowQuickWins} />
 

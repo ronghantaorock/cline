@@ -27,22 +27,6 @@ export function getClineUIOnboardingGroups(groupedModels: OnboardingModelGroup):
 	}
 }
 
-export function getPriceRange(modelInfo: OpenRouterModelInfo): string {
-	const prompt = Number(modelInfo.inputPrice ?? 0)
-	const completion = Number(modelInfo.outputPrice ?? 0)
-	const cost = prompt + completion
-	if (cost === 0) {
-		return "Free"
-	}
-	if (cost < 10) {
-		return "$"
-	}
-	if (cost > 50) {
-		return "$$$"
-	}
-	return "$$"
-}
-
 export function getOverviewLabel(overview: number): string {
 	if (overview >= 95) {
 		return "Top Performer"

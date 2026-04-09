@@ -9,14 +9,13 @@ import { Input } from "@/components/ui/input"
 import { Item, ItemContent, ItemDescription, ItemHeader, ItemMedia, ItemTitle } from "@/components/ui/item"
 import { useExtensionState } from "@/context/ExtensionStateContext"
 import { cn } from "@/lib/utils"
-import { AccountServiceClient, StateServiceClient } from "@/services/grpc-client"
+import { StateServiceClient } from "@/services/grpc-client"
 import ApiConfigurationSection from "../settings/sections/ApiConfigurationSection"
 import { useApiConfigurationHandlers } from "../settings/utils/useApiConfigurationHandlers"
 import {
 	getCapabilities,
 	getClineUIOnboardingGroups,
 	getOverviewLabel,
-	getPriceRange,
 	getSpeedLabel,
 	type OnboardingModelsByGroup,
 } from "./data-models"
@@ -68,11 +67,7 @@ const ModelSelection = ({
 				<ItemHeader className="flex flex-col w-full align-baseline">
 					<ItemTitle className="flex w-full justify-between">
 						<span className="font-semibold">{model.name || id}</span>
-						{model.badge ? (
-							<Badge variant="info">{model.badge}</Badge>
-						) : model.info ? (
-							<Badge>{getPriceRange(model.info)}</Badge>
-						) : null}
+						{model.badge && <Badge variant="info">{model.badge}</Badge>}
 					</ItemTitle>
 					{isSelected && model.info && (
 						<ItemDescription>
@@ -104,7 +99,6 @@ const ModelSelection = ({
 										<span>Context: </span>
 										<span className="text-foreground/70">{(model?.info.contextWindow || 0) / 1000}k</span>
 									</div>
-									<Badge>{getPriceRange(model.info)}</Badge>
 								</div>
 							)}
 						</div>
@@ -272,7 +266,7 @@ const OnboardingStepContent = ({
 
 const OnboardingView = ({ onboardingModels }: { onboardingModels: OnboardingModelGroup }) => {
 	const { handleFieldsChange } = useApiConfigurationHandlers()
-	const { openRouterModels, hideSettings, hideAccount, setShowWelcome } = useExtensionState()
+	const { openRouterModels, hideSettings, setShowWelcome } = useExtensionState()
 
 	const [stepNumber, setStepNumber] = useState(0)
 	const [isActionLoading, setIsActionLoading] = useState(false)
@@ -322,12 +316,11 @@ const OnboardingView = ({ onboardingModels }: { onboardingModels: OnboardingMode
 					actModeApiProvider: "cline",
 				})
 			}
-			hideAccount()
 			hideSettings()
 			const action = "onboarding_completed"
 			StateServiceClient.captureOnboardingProgress({ step, modelSelected, action, completed: true })
 		},
-		[hideAccount, hideSettings, handleFieldsChange, selectedModelId, openRouterModels],
+		[hideSettings, handleFieldsChange, selectedModelId, openRouterModels],
 	)
 
 	const handleFooterAction = useCallback(
@@ -335,17 +328,9 @@ const OnboardingView = ({ onboardingModels }: { onboardingModels: OnboardingMode
 			switch (action) {
 				case "signup":
 					setStepNumber(stepNumber + 1)
-					setIsActionLoading(true)
-					await AccountServiceClient.accountLoginClicked({})
-						.catch(() => {})
-						.finally(() => setIsActionLoading(false))
 					await finishOnboarding(true, stepNumber + 1)
 					break
 				case "signin":
-					setIsActionLoading(true)
-					await AccountServiceClient.accountLoginClicked({})
-						.catch(() => {})
-						.finally(() => setIsActionLoading(false))
 					await finishOnboarding(true, stepNumber + 1)
 					break
 				case "next":

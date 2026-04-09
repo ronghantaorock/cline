@@ -5,8 +5,7 @@
 	"version": "3.77.0",
 	"icon": "assets/icons/icon.png",
 	"workspaces": [
-		".",
-		"cli"
+		"."
 	],
 	"engines": {
 		"vscode": "^1.84.0"
@@ -383,18 +382,7 @@
 	"scripts": {
 		"vscode:prepublish": "npm run package",
 		"compile": "npm run check-types && npm run lint && node esbuild.mjs",
-		"compile-standalone": "npm run check-types && npm run lint && node esbuild.mjs --standalone",
-		"compile-standalone-npm": "npm run protos && npm run check-types && npm run lint && node esbuild.mjs --standalone",
-		"cli:link": "cd cli && npm run link",
-		"cli:build": "npm run protos && cd cli && npm run build",
-		"cli:run": "node cli/dist/cli.mjs",
-		"cli:build:production": "cd cli && npm run build:production",
-		"cli:watch": "cd cli && npm run watch",
-		"cli:test": "cd cli && npm run test",
 		"test:install": "bash scripts/test-install.sh",
-		"cli:dev": "cd cli && npm run dev",
-		"postcompile-standalone": "node scripts/package-standalone.mjs",
-		"postcompile-standalone-npm": "node scripts/package-npm.mjs",
 		"dev": "npm run protos && npm run watch",
 		"watch": "npx npm-run-all -p watch:*",
 		"watch:esbuild": "node esbuild.mjs --watch",
@@ -409,7 +397,7 @@
 		"clean:all": "npm run clean:build && npm run clean:deps",
 		"compile-tests": "node ./scripts/build-tests.js",
 		"watch-tests": "tsc -p . -w --outDir out",
-		"check-types": "npm run protos && npx tsc --noEmit && cd webview-ui && npx tsc --noEmit && cd ../cli && npx tsc --noEmit",
+		"check-types": "npm run protos && npx tsc --noEmit && cd webview-ui && npx tsc --noEmit",
 		"lint": "biome lint --no-errors-on-unmatched --files-ignore-unknown=true --diagnostic-level=error && npm run lint:proto",
 		"lint:proto": "bash ./scripts/proto-lint.sh",
 		"format": "biome format --changed --no-errors-on-unmatched --files-ignore-unknown=true --diagnostic-level=error",

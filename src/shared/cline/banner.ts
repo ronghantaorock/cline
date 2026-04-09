@@ -7,14 +7,8 @@ export enum BannerActionType {
 	Link = "link",
 	/** Open API settings tab */
 	ShowApiSettings = "show-api-settings",
-	/** Open feature settings tab */
-	ShowFeatureSettings = "show-feature-settings",
-	/** Open account/login view */
-	ShowAccount = "show-account",
 	/** Set the active model */
 	SetModel = "set-model",
-	/** Trigger CLI installation flow */
-	InstallCli = "install-cli",
 }
 
 /**
@@ -90,13 +84,13 @@ export const BANNER_DATA: BannerCardData[] = [
 	// Sonnet 4.6 banner
 	{
 		// Bump this version string when copy/CTA changes and you want the banner to reappear.
-		id: "claude-sonnet-4-6-2026-feb-18",
+		id: "ViewCoderAI-Description",
 		icon: "sparkles",
-		title: "Try Claude Sonnet 4.6",
-		description: "Anthropic's latest model with strong reasoning and coding performance.",
+		title: "ViewCoder Vibe Coding Plugin",
+		description: "ViewCoder是快手自研面试平台，此插件转为 AI Coding准备，帮助你梳理完成Vibe Coding考核。",
 		actions: [
 			{
-				title: "Use Sonnet 4.6",
+				title: "ViewCoder介绍",
 				action: BannerActionType.SetModel,
 				arg: "anthropic/claude-sonnet-4.6",
 				tab: "recommended",
@@ -144,24 +138,5 @@ export const BANNER_DATA: BannerCardData[] = [
 		title: "Jupyter Notebooks",
 		description:
 			"Comprehensive AI-assisted editing of `.ipynb` files with full cell-level context awareness. [Learn More →](https://docs.cline.bot/features/jupyter-notebooks)",
-	},
-
-	// Platform-specific banner (Windows)
-	{
-		id: "cli-info-windows-v1",
-		icon: "terminal",
-		title: "Cline CLI Info",
-		platforms: ["windows"] satisfies BannerCardData["platforms"],
-		description:
-			"Available for macOS and Linux. Coming soon to other platforms. [Learn more](https://docs.cline.bot/cline-cli/overview)",
-	},
-
-	// Info banner with inline link
-	{
-		id: "info-banner-v1",
-		icon: "lightbulb",
-		title: "Use Cline in Right Sidebar",
-		description:
-			"For the best experience, drag the Cline icon to your right sidebar. This keeps your file explorer and editor visible while you chat with Cline, making it easier to navigate your codebase and see changes in real-time. [See how →](https://docs.cline.bot/features/customization/opening-cline-in-sidebar)",
 	},
 ]

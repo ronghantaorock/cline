@@ -32,8 +32,6 @@ import {
 
 interface ChatViewProps {
 	isHidden: boolean
-	showAnnouncement: boolean
-	hideAnnouncement: () => void
 	showHistoryView: () => void
 }
 
@@ -41,7 +39,7 @@ interface ChatViewProps {
 const MAX_IMAGES_AND_FILES_PER_MESSAGE = CHAT_CONSTANTS.MAX_IMAGES_AND_FILES_PER_MESSAGE
 const QUICK_WINS_HISTORY_THRESHOLD = 3
 
-const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryView }: ChatViewProps) => {
+const ChatView = ({ isHidden, showHistoryView }: ChatViewProps) => {
 	const showNavbar = useShowNavbar()
 	const {
 		version,
@@ -348,9 +346,7 @@ const ChatView = ({ isHidden, showAnnouncement, hideAnnouncement, showHistoryVie
 					/>
 				) : (
 					<WelcomeSection
-						hideAnnouncement={hideAnnouncement}
 						shouldShowQuickWins={shouldShowQuickWins}
-						showAnnouncement={showAnnouncement}
 						showHistoryView={showHistoryView}
 						taskHistory={taskHistory}
 						telemetrySetting={telemetrySetting}
