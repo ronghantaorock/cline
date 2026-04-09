@@ -241,26 +241,14 @@ const OnboardingStepContent = ({
 	models,
 	onboardingModels,
 }: OnboardingStepContentProps) => {
+	// Skip user type selection, default to BYOK
 	if (step === 0) {
-		return <UserTypeSelectionStep onSelectUserType={onSelectUserType} userType={userType} />
+		return null
 	}
 	if (step === 2) {
 		return null
 	}
-	if (userType === NEW_USER_TYPE.FREE || userType === NEW_USER_TYPE.POWER) {
-		return (
-			<ModelSelection
-				models={models}
-				onboardingModels={onboardingModels}
-				onSelectModel={onSelectModel}
-				searchTerm={searchTerm}
-				selectedModelId={selectedModelId}
-				setSearchTerm={setSearchTerm}
-				userType={userType}
-			/>
-		)
-	}
-	// userType === NEW_USER_TYPE.BYOK
+	// Always show API configuration for BYOK
 	return <ApiConfigurationSection />
 }
 
@@ -268,9 +256,9 @@ const OnboardingView = ({ onboardingModels }: { onboardingModels: OnboardingMode
 	const { handleFieldsChange } = useApiConfigurationHandlers()
 	const { openRouterModels, hideSettings, setShowWelcome } = useExtensionState()
 
-	const [stepNumber, setStepNumber] = useState(0)
+	const [stepNumber, setStepNumber] = useState(1)
 	const [isActionLoading, setIsActionLoading] = useState(false)
-	const [userType, setUserType] = useState<NEW_USER_TYPE>(NEW_USER_TYPE.FREE)
+	const [userType, setUserType] = useState<NEW_USER_TYPE>(NEW_USER_TYPE.BYOK)
 
 	const [selectedModelId, setSelectedModelId] = useState("")
 	const [searchTerm, setSearchTerm] = useState("")
@@ -326,25 +314,13 @@ const OnboardingView = ({ onboardingModels }: { onboardingModels: OnboardingMode
 	const handleFooterAction = useCallback(
 		async (action: "signin" | "next" | "back" | "done" | "signup") => {
 			switch (action) {
-				case "signup":
-					setStepNumber(stepNumber + 1)
-					await finishOnboarding(true, stepNumber + 1)
-					break
-				case "signin":
-					await finishOnboarding(true, stepNumber + 1)
-					break
-				case "next":
-					StateServiceClient.captureOnboardingProgress({ step: stepNumber + 1 })
-					setStepNumber(stepNumber + 1)
-					break
-				case "back":
-					StateServiceClient.captureOnboardingProgress({ step: stepNumber - 1 })
-					setStepNumber(stepNumber - 1)
-					break
 				case "done":
 					await StateServiceClient.setWelcomeViewCompleted({ value: true }).catch(() => {})
 					setShowWelcome(false)
 					await finishOnboarding(false, stepNumber)
+					break
+				case "back":
+					// No-op for back button in BYOK mode
 					break
 			}
 		},
@@ -352,12 +328,13 @@ const OnboardingView = ({ onboardingModels }: { onboardingModels: OnboardingMode
 	)
 
 	const stepDisplayInfo = useMemo(() => {
-		const step = stepNumber === 0 || stepNumber === 2 ? STEP_CONFIG[stepNumber] : null
-		const title = step ? step.title : userType ? STEP_CONFIG[userType].title : STEP_CONFIG[0].title
-		const description = step ? step.description : null
-		const buttons = step ? step.buttons : userType ? STEP_CONFIG[userType].buttons : STEP_CONFIG[0].buttons
-		return { title, description, buttons }
-	}, [stepNumber, userType])
+		// Always use BYOK configuration
+		return {
+			title: STEP_CONFIG[NEW_USER_TYPE.BYOK].title,
+			description: null,
+			buttons: STEP_CONFIG[NEW_USER_TYPE.BYOK].buttons,
+		}
+	}, [])
 
 	return (
 		<div className="fixed inset-0 p-0 flex flex-col w-full">

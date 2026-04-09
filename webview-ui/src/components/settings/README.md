@@ -15,13 +15,17 @@ settings/
 │   └── ModelSelector.tsx       # Model selection dropdown
 ├── providers/                   # Provider-specific components
 │   ├── AnthropicProvider.tsx   # Anthropic-specific configuration
-│   ├── BedrockProvider.tsx     # AWS Bedrock configuration
+│   ├── ClaudeCodeProvider.tsx  # Claude Code configuration
+│   ├── DeepSeekProvider.tsx    # DeepSeek configuration
 │   ├── GeminiProvider.tsx      # Google Gemini configuration
-│   ├── MistralProvider.tsx     # Mistral configuration
-│   ├── OllamaProvider.tsx      # Ollama configuration
-│   ├── OpenAICompatibleProvider.tsx  # OpenAI compatible API configuration
+│   ├── MiniMaxProvider.tsx     # MiniMax configuration
+│   ├── MoonshotProvider.tsx    # Moonshot configuration
+│   ├── OpenAICompatible.tsx    # OpenAI compatible API configuration
+│   ├── OpenAINative.tsx        # OpenAI native configuration
 │   ├── OpenRouterProvider.tsx  # OpenRouter configuration
-│   └── ...
+│   ├── QwenCodeProvider.tsx    # Qwen Code configuration
+│   ├── QwenProvider.tsx        # Alibaba Qwen configuration
+│   └── VSCodeLmProvider.tsx    # VSCode Language Model configuration
 └── utils/                       # Utility functions
     ├── pricingUtils.ts         # Pricing formatting utilities
     └── providerUtils.ts        # API configuration normalization

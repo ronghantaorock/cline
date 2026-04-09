@@ -11,50 +11,22 @@ option java_package = "bot.cline.proto";
 
 // Service for model-related operations
 service ModelsService {
-  // Fetches available models from Ollama
-  rpc getOllamaModels(StringRequest) returns (StringArray);
-  // Fetches available models from LM Studio
-  rpc getLmStudioModels(StringRequest) returns (StringArray);
   // Fetches available models from VS Code LM API
   rpc getVsCodeLmModels(EmptyRequest) returns (VsCodeLmModelsArray);
   // Refreshes and returns OpenRouter models
   rpc refreshOpenRouterModelsRpc(EmptyRequest) returns (OpenRouterCompatibleModelInfo);
-  // Refreshes and returns recommended and free Cline models
-  rpc refreshClineRecommendedModelsRpc(EmptyRequest) returns (ClineRecommendedModelsResponse);
-  // Refreshes and returns Cline provider models
-  rpc refreshClineModelsRpc(EmptyRequest) returns (OpenRouterCompatibleModelInfo);
-  // Refreshes and returns Hugging Face models
-  rpc refreshHuggingFaceModels(EmptyRequest) returns (OpenRouterCompatibleModelInfo);
   // Refreshes and returns OpenAI models
   rpc refreshOpenAiModels(OpenAiModelsRequest) returns (StringArray);
-  // Refreshes and returns Requesty models
-  rpc refreshRequestyModels(EmptyRequest) returns (OpenRouterCompatibleModelInfo);
-  // Refreshes and returns Hicap models
-  rpc refreshHicapModels(EmptyRequest) returns (OpenRouterCompatibleModelInfo);
-  // Refreshes and returns LiteLLM models
-  rpc refreshLiteLlmModelsRpc(EmptyRequest) returns (OpenRouterCompatibleModelInfo);
   // Subscribe to OpenRouter models updates
   rpc subscribeToOpenRouterModels(EmptyRequest) returns (stream OpenRouterCompatibleModelInfo);
-  // Subscribe to LiteLLM models updates
-  rpc subscribeToLiteLlmModels(EmptyRequest) returns (stream OpenRouterCompatibleModelInfo);
   // Updates API configuration (legacy - uses combined configuration)
   rpc updateApiConfigurationProto(UpdateApiConfigurationRequest) returns (Empty);
   // Updates API configuration (new - uses separate options and secrets)
   rpc updateApiConfiguration(UpdateApiConfigurationRequestNew) returns (Empty);
   // Updates API configuration with partial values (only updates fields that are explicitly set)
   rpc updateApiConfigurationPartial(UpdateApiConfigurationPartialRequest) returns (Empty);
-  // Refreshes and returns Groq models
-  rpc refreshGroqModelsRpc(EmptyRequest) returns (OpenRouterCompatibleModelInfo);
-  // Refreshes and returns Baseten models
-  rpc refreshBasetenModelsRpc(EmptyRequest) returns (OpenRouterCompatibleModelInfo);
   // Fetches available models from SAP AI Core
   rpc getSapAiCoreModels(SapAiCoreModelsRequest) returns (SapAiCoreModelsResponse);
-  // Fetches available models from OCA
-  rpc refreshOcaModels(StringRequest) returns (OcaCompatibleModelInfo);
-  // Fetches available models from AIhubmix
-  rpc getAihubmixModels(EmptyRequest) returns (OpenRouterCompatibleModelInfo);
-  // Refreshes and returns Vercel AI Gateway models
-  rpc refreshVercelAiGatewayModelsRpc(EmptyRequest) returns (OpenRouterCompatibleModelInfo);
 }
 
 // List of VS Code LM models
@@ -115,18 +87,6 @@ message OpenRouterModelInfo {
 // Shared response message for model information
 message OpenRouterCompatibleModelInfo {
   map<string, OpenRouterModelInfo> models = 1;
-}
-
-message ClineRecommendedModel {
-  string id = 1;
-  string name = 2;
-  string description = 3;
-  repeated string tags = 4;
-}
-
-message ClineRecommendedModelsResponse {
-  repeated ClineRecommendedModel recommended = 1;
-  repeated ClineRecommendedModel free = 2;
 }
 
 // Request for fetching OpenAI models

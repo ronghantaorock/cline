@@ -28,8 +28,6 @@ import type { FolderLockWithRetryResult } from "@/core/locks/types"
 import { HostProvider } from "@/hosts/host-provider"
 import { ExtensionRegistryInfo } from "@/registry"
 import { AuthService } from "@/services/auth/AuthService"
-import { OcaAuthService } from "@/services/auth/oca/OcaAuthService"
-import { LogoutReason } from "@/services/auth/types"
 import { BannerService } from "@/services/banner/BannerService"
 import { featureFlagsService } from "@/services/feature-flags"
 import { getDistinctId } from "@/services/logging/distinctId"
@@ -72,7 +70,6 @@ export class Controller {
 	mcpHub: McpHub
 	accountService: ClineAccountService
 	authService: AuthService
-	ocaAuthService: OcaAuthService
 	readonly stateManager: StateManager
 
 	// NEW: Add workspace manager (optional initially)
@@ -133,7 +130,6 @@ export class Controller {
 			},
 		})
 		this.authService = AuthService.getInstance(this)
-		this.ocaAuthService = OcaAuthService.initialize(this)
 		this.accountService = ClineAccountService.getInstance()
 		BannerService.initialize(this)
 
@@ -202,23 +198,6 @@ export class Controller {
 			HostProvider.window.showMessage({
 				type: ShowMessageType.INFORMATION,
 				message: "Logout failed",
-			})
-		}
-	}
-
-	// Oca Auth methods
-	async handleOcaSignOut() {
-		try {
-			await this.ocaAuthService.handleDeauth(LogoutReason.USER_INITIATED)
-			await this.postStateToWebview()
-			HostProvider.window.showMessage({
-				type: ShowMessageType.INFORMATION,
-				message: "Successfully logged out of OCA",
-			})
-		} catch (_error) {
-			HostProvider.window.showMessage({
-				type: ShowMessageType.INFORMATION,
-				message: "OCA Logout failed",
 			})
 		}
 	}

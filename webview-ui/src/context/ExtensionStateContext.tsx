@@ -32,7 +32,6 @@ export interface ExtensionStateContextType extends ExtensionState {
 	didHydrateState: boolean
 	showWelcome: boolean
 	onboardingModels: OnboardingModelGroup | undefined
-	clineModels: Record<string, ModelInfo> | null
 	openRouterModels: Record<string, ModelInfo>
 	vercelAiGatewayModels: Record<string, ModelInfo>
 	hicapModels: Record<string, ModelInfo>
@@ -84,11 +83,7 @@ export interface ExtensionStateContextType extends ExtensionState {
 	setOnboardingModels: (value: OnboardingModelGroup | undefined) => void
 
 	// Refresh functions
-	refreshClineModels: () => void
 	refreshOpenRouterModels: () => void
-	refreshVercelAiGatewayModels: () => void
-	refreshHicapModels: () => void
-	refreshLiteLlmModels: () => Promise<void>
 
 	// Navigation state setters
 	setShowMcp: (value: boolean) => void
@@ -271,7 +266,6 @@ export const ExtensionStateContextProvider: React.FC<{
 	const [showWelcome, setShowWelcome] = useState(false)
 	const [onboardingModels, setOnboardingModels] = useState<OnboardingModelGroup | undefined>(undefined)
 
-	const [clineModels, setClineModels] = useState<Record<string, ModelInfo> | null>(null)
 	const [openRouterModels, setOpenRouterModels] = useState<Record<string, ModelInfo>>({
 		[openRouterDefaultModelId]: openRouterDefaultModelInfo,
 	})
@@ -541,20 +535,6 @@ export const ExtensionStateContextProvider: React.FC<{
 			},
 		})
 
-		// Subscribe to LiteLLM models updates
-		liteLlmModelsUnsubscribeRef.current = ModelsServiceClient.subscribeToLiteLlmModels(EmptyRequest.create({}), {
-			onResponse: (response: OpenRouterCompatibleModelInfo) => {
-				const models = fromProtobufModels(response.models)
-				setLiteLlmModels(models)
-			},
-			onError: (error) => {
-				console.error("Error in LiteLLM models subscription:", error)
-			},
-			onComplete: () => {
-				console.log("LiteLLM models subscription completed")
-			},
-		})
-
 		// Initialize webview using gRPC
 		UiServiceClient.initializeWebview(EmptyRequest.create({}))
 			.then(() => {
@@ -656,85 +636,18 @@ export const ExtensionStateContextProvider: React.FC<{
 			.catch((error: Error) => console.error("Failed to refresh OpenRouter models:", error))
 	}, [])
 
-	const refreshHicapModels = useCallback(() => {
-		ModelsServiceClient.refreshHicapModels(EmptyRequest.create({}))
-			.then((response: OpenRouterCompatibleModelInfo) => {
-				const models = response.models
-				setHicapModels({
-					...models,
-				})
-			})
-			.catch((error: Error) => console.error("Failed to refresh Hicap models:", error))
-	}, [])
-
-	const refreshLiteLlmModels = useCallback(() => {
-		return ModelsServiceClient.refreshLiteLlmModelsRpc(EmptyRequest.create({}))
-			.then((response: OpenRouterCompatibleModelInfo) => {
-				const models = fromProtobufModels(response.models)
-				setLiteLlmModels(models)
-			})
-			.catch((error: Error) => console.error("Failed to refresh LiteLLM models:", error))
-	}, [])
-
-	const refreshBasetenModels = useCallback(() => {
-		ModelsServiceClient.refreshBasetenModelsRpc(EmptyRequest.create({}))
-			.then((response) => {
-				setBasetenModels({
-					[basetenDefaultModelId]: basetenModels[basetenDefaultModelId],
-					...fromProtobufModels(response.models),
-				})
-			})
-			.catch((err) => console.error("Failed to refresh Baseten models:", err))
-	}, [])
-
-	const refreshVercelAiGatewayModels = useCallback(() => {
-		ModelsServiceClient.refreshVercelAiGatewayModelsRpc(EmptyRequest.create({}))
-			.then((response: OpenRouterCompatibleModelInfo) => {
-				const models = fromProtobufModels(response.models)
-				setVercelAiGatewayModels(models)
-			})
-			.catch((error: Error) => console.error("Failed to refresh Vercel AI Gateway models:", error))
-	}, [])
-
 	// Auto-refresh model lists on API key availability
 	useEffect(() => {
 		if (!openRouterModels || Object.keys(openRouterModels).length <= 1) {
 			refreshOpenRouterModels()
 		}
-		if (!vercelAiGatewayModels || Object.keys(vercelAiGatewayModels).length === 0) {
-			refreshVercelAiGatewayModels()
-		}
-		if (state.apiConfiguration?.basetenApiKey) {
-			refreshBasetenModels()
-		}
-		if (state.apiConfiguration?.liteLlmApiKey) {
-			refreshLiteLlmModels()
-		}
-	}, [
-		refreshOpenRouterModels,
-		refreshVercelAiGatewayModels,
-		state?.apiConfiguration?.basetenApiKey,
-		refreshBasetenModels,
-		state?.apiConfiguration?.liteLlmApiKey,
-		refreshLiteLlmModels,
-	])
-
-	// Refresh Cline models function
-	const refreshClineModels = useCallback(() => {
-		ModelsServiceClient.refreshClineModelsRpc(EmptyRequest.create({}))
-			.then((response: OpenRouterCompatibleModelInfo) => {
-				const models = fromProtobufModels(response.models)
-				setClineModels((prev) => (Object.keys(models).length > 0 ? models : (prev ?? null)))
-			})
-			.catch((error: Error) => console.error("Failed to refresh Cline models:", error))
-	}, [])
+	}, [refreshOpenRouterModels])
 
 	const contextValue: ExtensionStateContextType = {
 		...state,
 		didHydrateState,
 		showWelcome,
 		onboardingModels,
-		clineModels,
 		openRouterModels,
 		vercelAiGatewayModels,
 		hicapModels,
@@ -846,11 +759,7 @@ export const ExtensionStateContextProvider: React.FC<{
 			})),
 		setMcpTab,
 		setTotalTasksSize,
-		refreshClineModels,
 		refreshOpenRouterModels,
-		refreshVercelAiGatewayModels,
-		refreshHicapModels,
-		refreshLiteLlmModels,
 		onRelinquishControl,
 		expandTaskHeader,
 		setExpandTaskHeader,

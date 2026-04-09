@@ -137,7 +137,7 @@ async function fetchAndCacheModels(controller: Controller): Promise<Record<strin
 					outputPrice: parsePrice(rawModel.pricing?.completion) ?? 0,
 					cacheWritesPrice: parsePrice(rawModel.pricing?.input_cache_write),
 					cacheReadsPrice: parsePrice(rawModel.pricing?.input_cache_read),
-					description: rawModel.description ?? "",
+					description: "",
 					// If thinking is supported, set maxBudget with a default value as a placeholder
 					// to ensure it has a valid thinkingConfig that lets the application know thinking is supported.
 					thinkingConfig: supportThinking ? { maxBudget: ANTHROPIC_MAX_THINKING_BUDGET } : undefined,

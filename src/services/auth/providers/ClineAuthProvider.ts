@@ -1,5 +1,5 @@
 import axios from "axios"
-import { type JwtPayload } from "jwt-decode"
+import { type JwtPayload, jwtDecode } from "jwt-decode"
 import { ClineEnv, EnvironmentConfig } from "@/config"
 import { Controller } from "@/core/controller"
 import { HostProvider } from "@/hosts/host-provider"
@@ -10,7 +10,15 @@ import { CLINE_API_ENDPOINT } from "@/shared/cline/api"
 import { fetch, getAxiosSettings } from "@/shared/net"
 import { Logger } from "@/shared/services/Logger"
 import { type ClineAccountUserInfo, type ClineAuthInfo } from "../AuthService"
-import { parseJwtPayload } from "../oca/utils/utils"
+
+function parseJwtPayload<T extends JwtPayload>(token: string): T | null {
+	try {
+		const payload = jwtDecode<T>(token)
+		return payload
+	} catch {
+		return null
+	}
+}
 
 interface ClineAuthApiUser {
 	subject: string | null

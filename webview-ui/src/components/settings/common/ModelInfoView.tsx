@@ -207,32 +207,6 @@ export const ModelInfoView = ({
 				<ModelDescriptionMarkdown isPopup={isPopup} key="description" markdown={modelInfo.description} />
 			)}
 
-			{/* Compact Info Row: Context, Input, Output */}
-			<InfoRow>
-				{modelInfo.contextWindow !== undefined && modelInfo.contextWindow > 0 && (
-					<InfoItem>
-						<InfoLabel>Context: </InfoLabel>
-						<InfoValue>{formatCompactContext(modelInfo.contextWindow)}</InfoValue>
-					</InfoItem>
-				)}
-				{modelInfo.inputPrice !== undefined && (
-					<InfoItem>
-						<InfoLabel>Input: </InfoLabel>
-						<InfoValue>{formatCompactPrice(modelInfo.inputPrice)}</InfoValue>
-					</InfoItem>
-				)}
-				{modelInfo.outputPrice !== undefined && (
-					<InfoItem>
-						<InfoLabel>Output: </InfoLabel>
-						<InfoValue>
-							{hasThinkingConfig && modelInfo.thinkingConfig?.outputPrice !== undefined
-								? formatCompactPrice(modelInfo.thinkingConfig.outputPrice)
-								: formatCompactPrice(modelInfo.outputPrice)}
-						</InfoValue>
-					</InfoItem>
-				)}
-			</InfoRow>
-
 			{/* Collapsible Advanced Section */}
 			<CollapsibleHeader onClick={() => setAdvancedExpanded(!advancedExpanded)}>
 				<CollapsibleArrow $isExpanded={advancedExpanded}>▶</CollapsibleArrow>
